@@ -1,0 +1,31 @@
+version: "3.1"
+
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    restart: "always"
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./nginx/vhost/:/etc/nginx/vhost.d:ro
+      - ./nginx/conf.d/client_max_body_size.conf:/etc/nginx/conf.d/client_max_body_size.conf:ro
+      - ./static/:/code/static/
+      - ./media/:/code/media/
+
+  web:
+    build: .
+    restart: "always"
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/code/
+      - ./static/:/code/static/
+      - ./media/:/code/media/
+    environment:
+      - VIRTUAL_HOST=localhost, 130.211.208.82
+      - VIRTUAL_PORT=8000
+      - DEBUG=False
+
+
+  

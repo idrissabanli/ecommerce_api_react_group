@@ -1,0 +1,6 @@
+.venv/
+.vscode/
+postgresdb/
+*.pyc
+__pycache__/
+db.sqlite3
