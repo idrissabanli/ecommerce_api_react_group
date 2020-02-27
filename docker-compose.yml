@@ -23,7 +23,7 @@ services:
       - ./static/:/code/static/
       - ./media/:/code/media/
     environment:
-      - VIRTUAL_HOST=localhost, 130.211.208.82
+      - VIRTUAL_HOST=localhost, 35.225.243.133
       - VIRTUAL_PORT=8000
       - DEBUG=False
 
