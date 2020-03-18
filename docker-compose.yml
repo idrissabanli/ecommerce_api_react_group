@@ -20,7 +20,7 @@ services:
       - "8000:8000"
     volumes:
       - .:/code/
-      - db.sqlite3:/code/db.sqlite3
+      - ./db.sqlite3:/code/db.sqlite3
       - ./static/:/code/static/
       - ./media/:/code/media/
     environment:
