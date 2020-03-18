@@ -1,4 +1,4 @@
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from products.models import Category, Product, Order
 from products.apis.serializers import CategorySerializer, ProductRetrieveSerializer, ProductCreateSerializer, OrderSerializer, OrderRetrieveSerializer
 from rest_framework import permissions
@@ -39,4 +39,13 @@ class OrderViewSet(ModelViewSet):
 
     def get_queryset(self):
         return self.queryset.filter(customer=self.request.user)
+
+class OwnProductsAPIView(ReadOnlyModelViewSet):
+    serializer_class = ProductRetrieveSerializer
+    queryset = Product.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        return self.queryset.filter(owner=self.request.user)
+    
         
