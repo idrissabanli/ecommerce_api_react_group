@@ -11,7 +11,7 @@ class ProductRetrieveSerializer(serializers.ModelSerializer):
     owner = UserCreateSerializer()
     class Meta:
         model = Product
-        fields = ['id', 'title', 'owner', 'description', 'price', 'discount_price', 'amount_by_unit', 'unit', 'main_image',  'created_at']
+        fields = ['id', 'title', 'category', 'owner', 'description', 'price', 'discount_price', 'amount_by_unit', 'unit', 'main_image',  'created_at']
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):
@@ -19,7 +19,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'title', 'owner', 'description', 'price', 'discount_price', 'amount_by_unit', 'unit', 'main_image',  'created_at']
+        fields = ['id', 'title', 'category', 'owner', 'description', 'price', 'discount_price', 'amount_by_unit', 'unit', 'main_image',  'created_at']
 
     def validate(self, data):
         request = self.context.get('request')

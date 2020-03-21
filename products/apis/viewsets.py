@@ -2,6 +2,7 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from products.models import Category, Product, Order
 from products.apis.serializers import CategorySerializer, ProductRetrieveSerializer, ProductCreateSerializer, OrderSerializer, OrderRetrieveSerializer
 from rest_framework import permissions
+from url_filter.integrations.drf import DjangoFilterBackend
 
 class IsAuthenticatedForCreate(permissions.IsAuthenticated):
     def has_permission(self, request, view):
@@ -18,6 +19,8 @@ class CategoryViewSet(ModelViewSet):
 class ProductViewSet(ModelViewSet):
     permission_classes = [IsAuthenticatedForCreate,]
     queryset = Product.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filter_fields = ['category',]
     serializer_classes = {
         'list': ProductRetrieveSerializer,
         'retrieve': ProductRetrieveSerializer,
@@ -44,6 +47,7 @@ class OwnProductsAPIView(ReadOnlyModelViewSet):
     serializer_class = ProductRetrieveSerializer
     queryset = Product.objects.all()
     permission_classes = [permissions.IsAuthenticated]
+    
 
     def get_queryset(self):
         return self.queryset.filter(owner=self.request.user)

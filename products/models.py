@@ -20,6 +20,7 @@ class Category(models.Model):
 class Product(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=100)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     description = models.TextField()
     price = models.DecimalField(max_digits=7, decimal_places=2)
     discount_price = models.DecimalField(blank=True, null=True, max_digits=7, decimal_places=2)
