@@ -1,6 +1,9 @@
 from rest_framework import serializers
 from accounts.serializers import UserCreateSerializer
-from products.models import Category, Product, Order
+from products.models import Category, Product, Order, BasKet
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,7 +41,7 @@ class OrderRetrieveSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    customer = serializers.PrimaryKeyRelatedField(queryset=Order.objects.all(), required=False)
+    customer = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
 
     class Meta:
         model = Order
@@ -50,7 +53,24 @@ class OrderSerializer(serializers.ModelSerializer):
         return super().validate(data)
 
 
+class BasKetRetrieveSerializer(serializers.ModelSerializer):
+    product = ProductRetrieveSerializer()
+    customer = UserCreateSerializer()
+
+    class Meta:
+        model = BasKet
+        fields = ['id', 'product', 'customer', 'count', 'created_at']
 
 
+class BasKetSerializer(serializers.ModelSerializer):
+    customer = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), required=False)
 
+    class Meta:
+        model = BasKet
+        fields = ['id', 'product', 'customer', 'count', 'created_at']
+    
+    def validate(self, data):
+        request = self.context.get('request')
+        data['customer'] = request.user
+        return super().validate(data)
         

@@ -1,6 +1,6 @@
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
-from products.models import Category, Product, Order
-from products.apis.serializers import CategorySerializer, ProductRetrieveSerializer, ProductCreateSerializer, OrderSerializer, OrderRetrieveSerializer
+from products.models import Category, Product, Order, BasKet
+from products.apis.serializers import CategorySerializer, ProductRetrieveSerializer, ProductCreateSerializer, OrderSerializer, OrderRetrieveSerializer, BasKetRetrieveSerializer, BasKetSerializer
 from rest_framework import permissions
 from url_filter.integrations.drf import DjangoFilterBackend
 
@@ -36,6 +36,21 @@ class OrderViewSet(ModelViewSet):
         'list': OrderRetrieveSerializer,
         'retrieve': OrderRetrieveSerializer,
         'default': OrderSerializer
+    }
+    def get_serializer_class(self):
+        return self.serializer_classes.get(self.action, self.serializer_classes.get('default'))
+
+    def get_queryset(self):
+        return self.queryset.filter(customer=self.request.user)
+
+
+class BasKetViewSet(ModelViewSet):
+    queryset = BasKet.objects.all()
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_classes = {
+        'list': BasKetRetrieveSerializer,
+        'retrieve': BasKetRetrieveSerializer,
+        'default': BasKetSerializer
     }
     def get_serializer_class(self):
         return self.serializer_classes.get(self.action, self.serializer_classes.get('default'))
