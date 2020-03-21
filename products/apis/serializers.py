@@ -9,6 +9,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class ProductRetrieveSerializer(serializers.ModelSerializer):
     owner = UserCreateSerializer()
+    category = CategorySerializer()
     class Meta:
         model = Product
         fields = ['id', 'title', 'category', 'owner', 'description', 'price', 'discount_price', 'amount_by_unit', 'unit', 'main_image',  'created_at']
