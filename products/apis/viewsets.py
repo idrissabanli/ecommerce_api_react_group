@@ -46,6 +46,8 @@ class OrderViewSet(ModelViewSet):
 class OwnProductsAPIView(ReadOnlyModelViewSet):
     serializer_class = ProductRetrieveSerializer
     queryset = Product.objects.all()
+    filter_backends = [DjangoFilterBackend]
+    filter_fields = ['category',]
     permission_classes = [permissions.IsAuthenticated]
     
 
