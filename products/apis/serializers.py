@@ -2,6 +2,7 @@ from rest_framework import serializers
 from accounts.serializers import UserCreateSerializer
 from products.models import Category, Product, Order, BasKet
 from django.contrib.auth import get_user_model
+from rest_framework.validators import ValidationError
 
 User = get_user_model()
 
@@ -28,7 +29,10 @@ class ProductCreateSerializer(serializers.ModelSerializer):
     def validate(self, data):
         request = self.context.get('request')
         data['owner'] = request.user
-        return super().validate(data)
+        attrs = super().validate(data)
+        if float(data['discount_price']) > float(data['price']):
+            raise ValidationError("Discount price must be small than price")
+        return attrs
 
 class OrderRetrieveSerializer(serializers.ModelSerializer):
     product = ProductRetrieveSerializer()
