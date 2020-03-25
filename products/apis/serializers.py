@@ -30,7 +30,7 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         data['owner'] = request.user
         attrs = super().validate(data)
-        if float(data['discount_price']) > float(data['price']):
+        if data['discount_price'] and float(data['discount_price']) > float(data['price']):
             raise ValidationError("Discount price must be small than price")
         return attrs
 
