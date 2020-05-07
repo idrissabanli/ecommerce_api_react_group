@@ -30,7 +30,24 @@ class ProductCreateSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         data['owner'] = request.user
         attrs = super().validate(data)
-        if data['discount_price'] and float(data['discount_price']) > float(data['price']):
+        if data.get('discount_price') and float(data['discount_price']) > float(data['price']):
+            raise ValidationError("Discount price must be small than price")
+        return attrs
+
+
+class ProductUpdateSerializer(serializers.ModelSerializer):
+    owner = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all(), required=False)
+    main_image = serializers.ImageField(required=False)
+
+    class Meta:
+        model = Product
+        fields = ['id', 'title', 'category', 'owner', 'description', 'price', 'discount_price', 'amount_by_unit', 'unit', 'main_image',  'created_at']
+
+    def validate(self, data):
+        request = self.context.get('request')
+        data['owner'] = request.user
+        attrs = super().validate(data)
+        if data.get('discount_price') and float(data['discount_price']) > float(data['price']):
             raise ValidationError("Discount price must be small than price")
         return attrs
 

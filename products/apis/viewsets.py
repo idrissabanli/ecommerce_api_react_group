@@ -1,6 +1,6 @@
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from products.models import Category, Product, Order, BasKet
-from products.apis.serializers import CategorySerializer, ProductRetrieveSerializer, ProductCreateSerializer, OrderSerializer, OrderRetrieveSerializer, BasKetRetrieveSerializer, BasKetSerializer
+from products.apis.serializers import CategorySerializer, ProductRetrieveSerializer, ProductCreateSerializer, OrderSerializer, OrderRetrieveSerializer, BasKetRetrieveSerializer, BasKetSerializer, ProductUpdateSerializer
 from rest_framework import permissions
 from url_filter.integrations.drf import DjangoFilterBackend
 
@@ -24,6 +24,8 @@ class ProductViewSet(ModelViewSet):
     serializer_classes = {
         'list': ProductRetrieveSerializer,
         'retrieve': ProductRetrieveSerializer,
+        'update': ProductUpdateSerializer,
+        'partial_update': ProductUpdateSerializer,
         'default': ProductCreateSerializer
     }
     def get_serializer_class(self):
