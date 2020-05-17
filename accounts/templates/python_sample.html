@@ -1,0 +1,15 @@
+import requests
+
+{% if payload %}payload = {{payload | safe}}{% endif %}{%if query%}
+query = {{query | safe}}{% endif %}{% if headers %}
+# provide your API token here
+headers = {{headers | safe}}{% endif %}{% if method == 'GET' %}
+
+resp = requests.get('{{request_url}}', params=query{%if headers%}, headers=headers{%endif%})
+{% elif method == 'POST' %}
+
+resp = requests.post('{{request_url}}', data=payload{%if headers%}, headers=headers{%endif%})
+{% elif method == 'PUT' %}
+
+resp = requests.put('{{request_url}}', data=payload{%if headers%}, headers=headers{%endif%})
+{% endif %}print(resp.json())

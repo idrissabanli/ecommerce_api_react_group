@@ -3,6 +3,9 @@ from products.models import Category, Product, Order, BasKet
 from products.apis.serializers import CategorySerializer, ProductRetrieveSerializer, ProductCreateSerializer, OrderSerializer, OrderRetrieveSerializer, BasKetRetrieveSerializer, BasKetSerializer, ProductUpdateSerializer
 from rest_framework import permissions
 from url_filter.integrations.drf import DjangoFilterBackend
+from accounts.utils import CustomSwaggerAutoSchema
+from drf_yasg.utils import swagger_auto_schema
+from django.utils.decorators import method_decorator
 
 class IsAuthenticatedForCreate(permissions.IsAuthenticated):
     def has_permission(self, request, view):
@@ -10,10 +13,18 @@ class IsAuthenticatedForCreate(permissions.IsAuthenticated):
             return True
         return super(IsAuthenticatedForCreate, self).has_permission(request, view)
 
+
 class CategoryViewSet(ModelViewSet):
     permission_classes = [IsAuthenticatedForCreate,]
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+
+    # def get(self, *args, **kwargs):
+    #     return super().get(self, *args, **kwargs)
+
+    # def post(self, *args, **kwargs):
+    #     return super().post(self, *args, **kwargs)
+
 
 
 class ProductViewSet(ModelViewSet):
@@ -28,6 +39,7 @@ class ProductViewSet(ModelViewSet):
         'partial_update': ProductUpdateSerializer,
         'default': ProductCreateSerializer
     }
+
     def get_serializer_class(self):
         return self.serializer_classes.get(self.action,self.serializer_classes.get('default'))
 
