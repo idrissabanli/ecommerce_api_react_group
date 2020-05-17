@@ -26,7 +26,7 @@ class Product(models.Model):
     discount_price = models.DecimalField(blank=True, null=True, max_digits=7, decimal_places=2)
     amount_by_unit = models.IntegerField()
     unit = models.CharField(max_length=30)
-    main_image = models.ImageField(upload_to='product-images/')
+    main_image = models.ImageField(upload_to='product-images/', blank=True, null=True)
     is_published = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(auto_now_add=True)

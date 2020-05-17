@@ -6,11 +6,12 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.authtoken.serializers import AuthTokenSerializer
+from accounts.utils import CustomSwaggerAutoSchema
 
 class LoginAPI(ObtainAuthToken):
     custom_serializer_class = UserProfileSerializer
 
-    @swagger_auto_schema(request_body=AuthTokenSerializer, responses={200: custom_serializer_class})
+    @swagger_auto_schema(auto_schema=CustomSwaggerAutoSchema, request_body=AuthTokenSerializer, responses={200: custom_serializer_class})
     def post(self, request, *args, **kwargs):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         serializer.is_valid(raise_exception=True)
@@ -24,3 +25,7 @@ User = get_user_model()
 class RegisterAPIView(CreateAPIView):
     model = User
     serializer_class = UserCreateSerializer
+
+    @swagger_auto_schema(auto_schema=CustomSwaggerAutoSchema, request_body=UserCreateSerializer,)
+    def post(self, request, *args, **kwargs):
+        return super().post(request, *args, **kwargs)
