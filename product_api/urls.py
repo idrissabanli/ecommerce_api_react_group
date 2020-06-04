@@ -51,6 +51,6 @@ urlpatterns = [
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # This is change default admin panel Headers and titles
-admin.site.site_header = 'E-commerce Admin'
-admin.site.site_title = 'E-commerce Administration'
-admin.site.index_title = 'E-commerce Administration'
+admin.site.site_header = 'Student Tasks Admin'
+admin.site.site_title = 'Student Tasks Administration'
+admin.site.index_title = 'Student Tasks Administration'
