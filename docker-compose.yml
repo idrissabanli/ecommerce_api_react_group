@@ -13,6 +13,18 @@ services:
       - ./static/:/code/static/
       - ./media/:/code/media/
 
+  postgres:
+    image: postgres
+    volumes:
+      - ./postgresdb/:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    # env_file: .env
+    environment:
+      POSTGRES_DB: 'reports_db_name'
+      POSTGRES_USER: 'reports_user_name'
+      POSTGRES_PASSWORD: 'f26b8ab553cfd4767216dbc7be7702fcad1b0115a6347e871faab86174d7ed4e'
+
   web:
     build: .
     restart: "always"
@@ -27,6 +39,3 @@ services:
       - VIRTUAL_HOST=localhost,35.226.188.237,mars.se-pro.site
       - VIRTUAL_PORT=8000
       - DEBUG=False
-
-
-  

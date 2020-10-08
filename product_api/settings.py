@@ -104,8 +104,13 @@ WSGI_APPLICATION = 'product_api.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'reports_db_name',
+        'HOST': 'postgres',
+        'PORT': 5432,
+        'USER': 'reports_user_name',
+        'PASSWORD': 'f26b8ab553cfd4767216dbc7be7702fcad1b0115a6347e871faab86174d7ed4e',
+        'CONN_MAX_AGE': None
     }
 }
 
