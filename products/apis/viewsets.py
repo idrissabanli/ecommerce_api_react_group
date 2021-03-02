@@ -86,12 +86,13 @@ class CategoryViewSet(ModelViewSet):
 
 
 
-class ProductViewSet(ModelViewSet):
+class ProductViewSet(MultiSerializerViewSet):
     permission_classes = [IsAuthenticatedForCreate,]
     pagination_class = CustomPageNumberPaginationWithPageNumber
     queryset = Product.objects.all()
     filter_backends = [DjangoFilterBackend]
     filter_fields = ['category',]
+    result_keyword = "products"
     serializer_classes = {
         'list': ProductRetrieveSerializer,
         'retrieve': ProductRetrieveSerializer,
@@ -118,7 +119,7 @@ class OrderViewSet(ModelViewSet):
         return self.queryset.filter(customer=self.request.user)
 
 
-class BasKetViewSet(MultiSerializerViewSet):
+class BasKetViewSet(ModelViewSet):
     queryset = BasKet.objects.all()
     permission_classes = [permissions.IsAuthenticated]
     serializer_classes = {
@@ -126,11 +127,7 @@ class BasKetViewSet(MultiSerializerViewSet):
         'retrieve': BasKetRetrieveSerializer,
         'default': BasKetSerializer
     }
-    result_keyword = "items"
     http_method_names = ("get", "post", "delete", "options")
-
-    def get_serializer_class(self):
-        return self.serializer_classes.get(self.action, self.serializer_classes.get('default'))
 
     def get_queryset(self):
         return self.queryset.filter(customer=self.request.user)
