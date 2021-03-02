@@ -91,7 +91,7 @@ class ProductViewSet(MultiSerializerViewSet):
     permission_classes = [IsAuthenticatedForCreate,]
     pagination_class = CustomPageNumberPaginationWithPageNumber
     queryset = Product.objects.all()
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
     filter_fields = ['category',]
     result_keyword = "products"
     serializer_classes = {
@@ -102,8 +102,6 @@ class ProductViewSet(MultiSerializerViewSet):
         'default': ProductCreateSerializer
     }
 
-    def get_serializer_class(self):
-        return self.serializer_classes.get(self.action,self.serializer_classes.get('default'))
 
 class OrderViewSet(ModelViewSet):
     queryset = Order.objects.all()
