@@ -104,7 +104,7 @@ class BasKetSerializer(serializers.ModelSerializer):
             instance.count = validated_data['count']
             instance.save()
         else:
-            instance = super().create(self, validated_data)
+            instance = super().create(validated_data)
         return instance
             
         
