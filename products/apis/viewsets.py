@@ -15,6 +15,64 @@ class IsAuthenticatedForCreate(permissions.IsAuthenticated):
         return super(IsAuthenticatedForCreate, self).has_permission(request, view)
 
 
+class MultiSerializerViewSet(viewsets.ModelViewSet):
+    serializers = {
+        'default': None,
+    }
+    result_keyword = ""
+    limit_query_param = 'limit'
+    max_limit = None
+
+    def get_limit(self):
+        if self.limit_query_param:
+            try:
+                return _positive_int(
+                    self.request.query_params[self.limit_query_param],
+                    strict=True,
+                    cutoff=self.max_limit
+                )
+            except (KeyError, ValueError):
+                return None
+        return None
+
+    def get_queryset(self):
+        queryset = super(MultiSerializerViewSet, self).get_queryset()
+        limit = self.get_limit()
+        if limit:
+            queryset = queryset[:limit]
+        return queryset
+
+    def get_serializer_class(self):
+        return self.serializers.get(self.action,
+                                    self.serializers['default'])
+
+    def get_paginated_response_with_result_keyword(self, data, result_keyword):
+        """
+        Return a paginated style `Response` object for the given output data.
+        """
+        assert self.paginator is not None
+        if 'get_paginated_response_with_result_keyword' in dir(self.paginator):
+            return self.paginator.get_paginated_response_with_result_keyword(data, self.result_keyword)
+        return self.get_paginated_response(data)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            if self.result_keyword:
+                return self.get_paginated_response_with_result_keyword(serializer.data, self.result_keyword)
+            else:
+                return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        if self.result_keyword:
+            return Response({self.result_keyword: serializer.data})
+        return Response(serializer.data)
+
+
+
+
 class CategoryViewSet(ModelViewSet):
     permission_classes = [IsAuthenticatedForCreate,]
     queryset = Category.objects.all()
@@ -60,7 +118,7 @@ class OrderViewSet(ModelViewSet):
         return self.queryset.filter(customer=self.request.user)
 
 
-class BasKetViewSet(ModelViewSet):
+class BasKetViewSet(MultiSerializerViewSet):
     queryset = BasKet.objects.all()
     permission_classes = [permissions.IsAuthenticated]
     serializer_classes = {
