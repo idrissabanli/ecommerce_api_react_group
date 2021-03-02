@@ -8,6 +8,7 @@ from accounts.utils import CustomSwaggerAutoSchema
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
 from rest_framework.response import Response
+from rest_framework.pagination import _positive_int
 
 class IsAuthenticatedForCreate(permissions.IsAuthenticated):
     def has_permission(self, request, view):
