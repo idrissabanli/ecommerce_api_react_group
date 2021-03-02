@@ -2,6 +2,7 @@ from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from products.models import Category, Product, Order, BasKet
 from products.apis.serializers import CategorySerializer, ProductRetrieveSerializer, ProductCreateSerializer, OrderSerializer, OrderRetrieveSerializer, BasKetRetrieveSerializer, BasKetSerializer, ProductUpdateSerializer
 from rest_framework import permissions
+from products.apis.pagination import CustomPageNumberPaginationWithPageNumber
 from url_filter.integrations.drf import DjangoFilterBackend
 from accounts.utils import CustomSwaggerAutoSchema
 from drf_yasg.utils import swagger_auto_schema
@@ -29,6 +30,7 @@ class CategoryViewSet(ModelViewSet):
 
 class ProductViewSet(ModelViewSet):
     permission_classes = [IsAuthenticatedForCreate,]
+    pagination_class = CustomPageNumberPaginationWithPageNumber
     queryset = Product.objects.all()
     filter_backends = [DjangoFilterBackend]
     filter_fields = ['category',]
@@ -66,6 +68,8 @@ class BasKetViewSet(ModelViewSet):
         'retrieve': BasKetRetrieveSerializer,
         'default': BasKetSerializer
     }
+    http_method_names = ("get", "post", "delete", "options")
+
     def get_serializer_class(self):
         return self.serializer_classes.get(self.action, self.serializer_classes.get('default'))
 

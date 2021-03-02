@@ -94,4 +94,17 @@ class BasKetSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         data['customer'] = request.user
         return super().validate(data)
+
+    def create(self, validated_data):
+        request = self.context.get('request')
+        user = request.user
+        product = validated_data['product']
+        instance = BasKet.objects.filter(customer=user, product=product).first()
+        if item:
+            item.count = validated_data['count']
+            item.save()
+        else:
+            instance = super().create(self, validated_data)
+        return instance
+            
         
