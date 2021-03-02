@@ -122,7 +122,7 @@ class OrderViewSet(ModelViewSet):
 class BasKetViewSet(ModelViewSet):
     queryset = BasKet.objects.all()
     permission_classes = [permissions.IsAuthenticated]
-    serializer_classes = {
+    serializers = {
         'list': BasKetRetrieveSerializer,
         'retrieve': BasKetRetrieveSerializer,
         'default': BasKetSerializer
@@ -131,6 +131,10 @@ class BasKetViewSet(ModelViewSet):
 
     def get_queryset(self):
         return self.queryset.filter(customer=self.request.user)
+
+    def get_serializer_class(self):
+        return self.serializers.get(self.action,
+                                    self.serializers['default'])
 
 class OwnProductsAPIView(ReadOnlyModelViewSet):
     serializer_class = ProductRetrieveSerializer
