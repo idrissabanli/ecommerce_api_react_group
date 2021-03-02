@@ -7,6 +7,7 @@ from url_filter.integrations.drf import DjangoFilterBackend
 from accounts.utils import CustomSwaggerAutoSchema
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
+from rest_framework.response import Response
 
 class IsAuthenticatedForCreate(permissions.IsAuthenticated):
     def has_permission(self, request, view):
@@ -72,7 +73,6 @@ class MultiSerializerViewSet(ModelViewSet):
 
 
 
-
 class CategoryViewSet(ModelViewSet):
     permission_classes = [IsAuthenticatedForCreate,]
     queryset = Category.objects.all()
@@ -126,6 +126,7 @@ class BasKetViewSet(MultiSerializerViewSet):
         'retrieve': BasKetRetrieveSerializer,
         'default': BasKetSerializer
     }
+    result_keyword = "items"
     http_method_names = ("get", "post", "delete", "options")
 
     def get_serializer_class(self):
