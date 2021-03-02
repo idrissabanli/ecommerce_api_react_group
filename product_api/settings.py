@@ -67,6 +67,10 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 REST_FRAMEWORK = {
+    'PAGE_SIZE': 8,
+    'DATE_FORMAT': "%Y-%m-%d",
+    'DATETIME_FORMAT': "%Y-%m-%d %H:%M:%S",
+    'DEFAULT_PAGINATION_CLASS': None,
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.BasicAuthentication',
