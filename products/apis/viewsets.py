@@ -15,7 +15,7 @@ class IsAuthenticatedForCreate(permissions.IsAuthenticated):
         return super(IsAuthenticatedForCreate, self).has_permission(request, view)
 
 
-class MultiSerializerViewSet(viewsets.ModelViewSet):
+class MultiSerializerViewSet(ModelViewSet):
     serializers = {
         'default': None,
     }
