@@ -35,7 +35,7 @@ pylint==2.4.4
 pyparsing==2.4.6
 pytz==2019.3
 requests==2.23.0
-rsa==4.0
+rsa==4.7
 ruamel.yaml==0.16.10
 ruamel.yaml.clib==0.2.0
 six==1.14.0
