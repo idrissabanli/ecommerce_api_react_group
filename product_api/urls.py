@@ -43,7 +43,7 @@ urlpatterns = [
     path('jet/dashboard/', include('jet.dashboard.urls', 'jet-dashboard')),  # Django JET dashboard URLS
     path('admin/', admin.site.urls),
     path('', include('products.urls', namespace='products')),
-    path('', include('blog.blog_api.urls', namespace='blog')),
+    # path('', include('blog.blog_api.urls', namespace='blog')),
     path('accounts/', include('accounts.urls', namespace='accounts')),
     re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'^api-documentation/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
