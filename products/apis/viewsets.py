@@ -1,11 +1,16 @@
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from products.models import Category, Product, Order, BasKet
-from products.apis.serializers import CategorySerializer, ProductRetrieveSerializer, ProductCreateSerializer, OrderSerializer, OrderRetrieveSerializer, BasKetRetrieveSerializer, BasKetSerializer, ProductUpdateSerializer
-from rest_framework import permissions
+from products.apis.serializers import (
+    CategorySerializer, CategoryRetrieveSerializer,
+    ProductRetrieveSerializer, ProductCreateSerializer, OrderSerializer, 
+    OrderRetrieveSerializer, BasKetRetrieveSerializer, BasKetSerializer, ProductUpdateSerializer
+)
+from rest_framework import permissions, filters
 from url_filter.integrations.drf import DjangoFilterBackend
 from accounts.utils import CustomSwaggerAutoSchema
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
+
 
 class IsAuthenticatedForCreate(permissions.IsAuthenticated):
     def has_permission(self, request, view):
@@ -19,6 +24,11 @@ class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
+    serializer_classes = {
+        'retrieve': CategoryRetrieveSerializer,
+        'default': CategorySerializer
+    }
+
     # def get(self, *args, **kwargs):
     #     return super().get(self, *args, **kwargs)
 
@@ -30,8 +40,9 @@ class CategoryViewSet(ModelViewSet):
 class ProductViewSet(ModelViewSet):
     permission_classes = [IsAuthenticatedForCreate,]
     queryset = Product.objects.all()
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filter_fields = ['category',]
+    search_fields = ['title__icontains', 'category__title__icontains']
     serializer_classes = {
         'list': ProductRetrieveSerializer,
         'retrieve': ProductRetrieveSerializer,
