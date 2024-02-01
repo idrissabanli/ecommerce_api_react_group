@@ -36,7 +36,7 @@ services:
       - ./static/:/code/static/
       - ./media/:/code/media/
     environment:
-      - VIRTUAL_HOST=localhost,35.226.188.237,mars.se-pro.site
+      - VIRTUAL_HOST=localhost,64.226.66.94,mars-ecommerce.se-pro.site
       - VIRTUAL_PORT=8000
       - DEBUG=False
     depends_on: 

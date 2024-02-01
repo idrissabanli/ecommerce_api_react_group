@@ -1,15 +1,16 @@
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from products.models import Category, Product, Order, BasKet
-from products.apis.serializers import (
-    CategorySerializer, CategoryRetrieveSerializer,
-    ProductRetrieveSerializer, ProductCreateSerializer, OrderSerializer, 
-    OrderRetrieveSerializer, BasKetRetrieveSerializer, BasKetSerializer, ProductUpdateSerializer
-)
 from rest_framework import permissions, filters
+from products.apis.serializers import CategorySerializer, CategoryRetrieveSerializer, ProductRetrieveSerializer, ProductCreateSerializer, OrderSerializer, OrderRetrieveSerializer, BasKetRetrieveSerializer, BasKetSerializer, ProductUpdateSerializer
+from rest_framework import permissions
+from products.apis.pagination import CustomPageNumberPaginationWithPageNumber
 from url_filter.integrations.drf import DjangoFilterBackend
 from accounts.utils import CustomSwaggerAutoSchema
 from drf_yasg.utils import swagger_auto_schema
 from django.utils.decorators import method_decorator
+from rest_framework.response import Response
+from rest_framework.pagination import _positive_int
+from rest_framework import filters
 
 
 class IsAuthenticatedForCreate(permissions.IsAuthenticated):
@@ -17,6 +18,63 @@ class IsAuthenticatedForCreate(permissions.IsAuthenticated):
         if request.method == 'GET':
             return True
         return super(IsAuthenticatedForCreate, self).has_permission(request, view)
+
+
+class MultiSerializerViewSet(ModelViewSet):
+    serializers = {
+        'default': None,
+    }
+    result_keyword = ""
+    limit_query_param = 'limit'
+    max_limit = None
+
+    def get_limit(self):
+        if self.limit_query_param:
+            try:
+                return _positive_int(
+                    self.request.query_params[self.limit_query_param],
+                    strict=True,
+                    cutoff=self.max_limit
+                )
+            except (KeyError, ValueError):
+                return None
+        return None
+
+    def get_queryset(self):
+        queryset = super(MultiSerializerViewSet, self).get_queryset()
+        limit = self.get_limit()
+        if limit:
+            queryset = queryset[:limit]
+        return queryset
+
+    def get_serializer_class(self):
+        return self.serializers.get(self.action,
+                                    self.serializers['default'])
+
+    def get_paginated_response_with_result_keyword(self, data, result_keyword):
+        """
+        Return a paginated style `Response` object for the given output data.
+        """
+        assert self.paginator is not None
+        if 'get_paginated_response_with_result_keyword' in dir(self.paginator):
+            return self.paginator.get_paginated_response_with_result_keyword(data, self.result_keyword)
+        return self.get_paginated_response(data)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            if self.result_keyword:
+                return self.get_paginated_response_with_result_keyword(serializer.data, self.result_keyword)
+            else:
+                return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        if self.result_keyword:
+            return Response({self.result_keyword: serializer.data})
+        return Response(serializer.data)
+
 
 
 class CategoryViewSet(ModelViewSet):
@@ -37,13 +95,16 @@ class CategoryViewSet(ModelViewSet):
 
 
 
-class ProductViewSet(ModelViewSet):
+class ProductViewSet(MultiSerializerViewSet):
     permission_classes = [IsAuthenticatedForCreate,]
+    pagination_class = CustomPageNumberPaginationWithPageNumber
     queryset = Product.objects.all()
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
     filter_fields = ['category',]
     search_fields = ['title__icontains', 'category__title__icontains']
-    serializer_classes = {
+    filter_fields = ['category',]
+    result_keyword = "products"
+    serializers = {
         'list': ProductRetrieveSerializer,
         'retrieve': ProductRetrieveSerializer,
         'update': ProductUpdateSerializer,
@@ -51,8 +112,6 @@ class ProductViewSet(ModelViewSet):
         'default': ProductCreateSerializer
     }
 
-    def get_serializer_class(self):
-        return self.serializer_classes.get(self.action,self.serializer_classes.get('default'))
 
 class OrderViewSet(ModelViewSet):
     queryset = Order.objects.all()
@@ -72,16 +131,19 @@ class OrderViewSet(ModelViewSet):
 class BasKetViewSet(ModelViewSet):
     queryset = BasKet.objects.all()
     permission_classes = [permissions.IsAuthenticated]
-    serializer_classes = {
+    serializers = {
         'list': BasKetRetrieveSerializer,
         'retrieve': BasKetRetrieveSerializer,
         'default': BasKetSerializer
     }
-    def get_serializer_class(self):
-        return self.serializer_classes.get(self.action, self.serializer_classes.get('default'))
+    http_method_names = ("get", "post", "delete", "options")
 
     def get_queryset(self):
         return self.queryset.filter(customer=self.request.user)
+
+    def get_serializer_class(self):
+        return self.serializers.get(self.action,
+                                    self.serializers['default'])
 
 class OwnProductsAPIView(ReadOnlyModelViewSet):
     serializer_class = ProductRetrieveSerializer
