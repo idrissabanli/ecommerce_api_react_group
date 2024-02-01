@@ -101,8 +101,7 @@ class ProductViewSet(MultiSerializerViewSet):
     queryset = Product.objects.all()
     filter_backends = (filters.SearchFilter, DjangoFilterBackend, filters.OrderingFilter)
     filter_fields = ['category',]
-    search_fields = ['title__icontains', 'category__title__icontains']
-    filter_fields = ['category',]
+    search_fields = ['title__icontains',]
     result_keyword = "products"
     serializers = {
         'list': ProductRetrieveSerializer,
