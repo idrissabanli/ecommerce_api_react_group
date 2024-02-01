@@ -12,7 +12,7 @@ class CategoryProductRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['id', 'title', 'description', 'price', 'discount_price', 'amount_by_unit', 'unit', 'main_image',  'created_at']
+        fields = ['id', 'title', 'owner', 'description', 'price', 'discount_price', 'amount_by_unit', 'unit', 'main_image',  'created_at']
 
 
 class CategoryRetrieveSerializer(serializers.ModelSerializer):
