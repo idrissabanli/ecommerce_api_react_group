@@ -75,12 +75,17 @@ class MultiSerializerViewSet(ModelViewSet):
             return Response({self.result_keyword: serializer.data})
         return Response(serializer.data)
 
+class BaseReadOnlyViewSet(ReadOnlyModelViewSet):
+
+    def get_serializer_class(self):
+        return self.serializers.get(self.action,
+                                    self.serializers['default'])
 
 
-class CategoryViewSet(ModelViewSet):
+
+class CategoryViewSet(BaseReadOnlyViewSet):
     permission_classes = [IsAuthenticatedForCreate,]
     queryset = Category.objects.all()
-    serializer_class = CategorySerializer
 
     serializers = {
         'retrieve': CategoryRetrieveSerializer,
