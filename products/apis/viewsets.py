@@ -82,7 +82,7 @@ class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
 
-    serializer_classes = {
+    serializers = {
         'retrieve': CategoryRetrieveSerializer,
         'default': CategorySerializer
     }
